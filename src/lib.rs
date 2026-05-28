@@ -1,14 +1,10 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+use logos::Logos;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[derive(Debug, Logos, PartialEq)]
+#[logos(skip r"[ \t\n\f]+")] // Skip whitespace
+pub enum Token {
+    #[token("{")]
+    LBrace,
+    #[token("}")]
+    RBrace,
 }
