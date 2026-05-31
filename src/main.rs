@@ -1,12 +1,27 @@
+use std::{env, fs};
+
 use ariadne::{Color, Label, Report, ReportKind, Source};
 use chumsky::{input::Stream, prelude::*};
 use jhon::{Token, parser};
 use logos::Logos;
 
 fn main() {
-    let src = "{}";
+    let args: Vec<String> = env::args().collect();
 
-    let token_iter = Token::lexer(src).spanned().map(|(tok, span)| match tok {
+    if args.len() != 2 {
+        println!("usage: {} file.json", args[0]);
+        return;
+    }
+
+    let src = match fs::read_to_string(&args[1]) {
+        Ok(s) => s,
+        Err(e) => {
+            eprintln!("Error reading file: {}", e);
+            return;
+        }
+    };
+
+    let token_iter = Token::lexer(&src).spanned().map(|(tok, span)| match tok {
         Ok(tok) => (tok, span.into()),
         Err(()) => (Token::Error, span.into()),
     });
@@ -28,7 +43,7 @@ fn main() {
                             .with_color(Color::Red),
                     )
                     .finish()
-                    .eprint(Source::from(src))
+                    .eprint(Source::from(src.clone()))
                     .unwrap();
             }
         }
